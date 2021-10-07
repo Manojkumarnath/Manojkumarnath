@@ -1,0 +1,199 @@
+www.linkedin.com/in/kushal-samota
+https://blog.boltops.com/2020/10/08/terraform-hcl-for-in-and-removing-duplication
+
+abubakkar
+win10-ATOM-001
+Server IP : 101.53.148.41
+Username : admin
+Password : Gip@1234#
+
+ashok
+win10-ATOM-002
+Server IP : 101.53.148.42
+Username : admin
+Password : Gip@1234#
+
+manoj
+win10-ATOM-003
+Server IP : 101.53.148.43
+Username : admin
+Password : Gip@1234#
+
+radha
+win10-ATOM-004
+Server IP : 101.53.148.46
+Username : admin
+Password : Gip@1234#
+
+rajesh
+win10-ATOM-005
+Server IP : 101.53.148.47
+Username : admin
+Password : Gip@1234#
+
+rajkumar
+win10-ATOM-006
+Server IP : 101.53.148.48
+Username : admin
+Password : Gip@1234#
+
+sagar
+win10-ATOM-007
+Server IP : 101.53.148.49
+Username : admin
+Password : Gip@1234#
+
+sandeep
+win10-ATOM-008
+Server IP : 101.53.148.51
+Username : admin
+Password : Gip@1234#
+
+sashi
+win10-ATOM-009
+Server IP : 101.53.148.52
+Username : admin
+Password : Gip@1234#
+
+shyam
+win10-ATOM-0010
+Server IP : 101.53.148.53
+Username : admin
+Password : Gip@1234#
+
+
+
+resource "aws_instance" "ec2instance" {
+ami = "ami-0a23ccb2cdd9286bb"
+instance_type = "t2.nano"
+
+
+ tags = {
+Name = "DBINSTANCE"
+}
+}
+
+Print DNS , IP
+
+output "mydbinstance_privatedns" {
+value = aws_instance.ec2instance.private_dns
+}
+
+
+output "mydbinstancepublicip" {
+value = aws_instance.ec2instance.public_ip
+}
+
+output "mydbinstancepublicdns" {
+value = aws_instance.ec2instance.public_dns
+
+
+EIP 
+
+resource "aws_eip" "myelasticip" {
+vpc = true
+}
+
+resource "aws_instance" "ec2instance" {
+ami = "ami-0a23ccb2cdd9286bb"
+instance_type = "t2.nano"
+
+ tags = {
+Name = "DBINSTANCE"
+}
+}
+
+resource "aws_eip_association" "eip_assoc" {
+instance_id = aws_instance.ec2instance.id
+allocation_id = aws_eip.myelasticip.id
+
+
+Security Group
+
+resource "aws_security_group" "dbsg" {
+name = "databasesg"
+description = "Allow TLS inbound traffic"
+ingress {
+description = "TLS from VPC"
+from_port = 443
+to_port = 443
+protocol = "tcp"
+cidr_blocks = ["${aws_eip.myelasticip.public_ip}/32"]
+}
+tags = {
+Name = "allow_tls"
+}
+}
+
+
+Variables 
+
+
+    create a variable.tf
+
+    variable "instancetype" {​​​}​​​
+
+    save the file
+
+    resource "aws_instance" "ec2instance" {​​​
+ami = "ami-0a23ccb2cdd9286bb"
+instance_type = var.instancetype
+}​​​
+
+    run terraform plan command
+
+    and see whether it ask for entering the variable value or not
+
+    now run
+
+    terraform plan -var="instancetype=t2.nano"
+
+    and see 
+
+    now go in variable.tf file
+
+    and write
+    variable "instancetype" {​​​
+    default = "t2.micro"
+            }​​​
+    and run terraform plan
+
+    and write
+
+    now create terraform.tfvars file
+
+    instancetype = "m5.large"
+
+    and run terraform plan command
+
+
+Variables Data & Type
+
+    resource "aws_instance" "ec2instance" {​​​
+ami = "ami-0a23ccb2cdd9286bb"
+instance_type = var.instancelist[1]
+}​​​
+
+variable "instancelist" {​​​
+type = list
+default = ["m5.large","t2.small","t2.micro"]
+}​​​
+
+    resource "aws_instance" "ec2instance" {​​​
+ami = "ami-0a23ccb2cdd9286bb"
+instance_type = var.instancelist["us-east-1"]
+}​​​
+
+variable "instancelist" {​​​
+type = map
+default = {​​​
+us-east-1 = "t2.micro"
+ap-south-1 = "t2.small"
+us-west-1 = "t2.nano"
+}​​​
+}​​​
+
+
+
+
+
