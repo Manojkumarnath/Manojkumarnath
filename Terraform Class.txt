@@ -49,6 +49,8 @@ output "mydbinstance_privatedns" {
 output "mydbinstancepublicip" {
   value = aws_instance.ec2instance.public_ip
 }
+output "mydbinstance_public_dns" {                   or we can write as without underscore publicip and privatedns
+  value = aws_instance.ec2_instance.public_dns
 =================================
 
 resource "aws_eip" "myelasticip" {
